@@ -1,0 +1,36 @@
+.header {
+    height: 70px;
+    padding-top: 20px;
+}
+
+.alert {
+    position: absolute;
+    visibility: hidden;
+}
+
+.show {
+    visibility: visible;
+}
+
+.form-control {
+    margin-bottom: 6px;
+}
+
+.btn-crud {
+    margin-right: 30px;
+    margin-top: 5px;
+}
+
+#SVG {
+    height: 1000px;
+    width: 1000px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+#svgMap {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}

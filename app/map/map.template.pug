@@ -1,0 +1,44 @@
+.container-fluid.header
+    .col-xs-11
+        h3 Добро пожаловать, {{$ctrl.userInfo.username}}
+    .col-xs-1
+        a.btn.btn-default(ng-click='$ctrl.logout()') Выйти
+.container-fluid.main
+    .container.col-xs-7
+        .container.wrapper
+            object#svgMap(data='map/tutzing.svg', type='image/svg+xml')
+            svg#SVG
+    .container.col-xs-5
+        form.form-horizontal(novalidate='')
+            .form-group
+                label.col-xs-6.control-label(for='inputName') Наименование торговой точки
+                .col-xs-6
+                    input#inputName.form-control(type='text', ng-model='$ctrl.current.name')
+            .form-group
+                label.col-xs-6.control-label(for='inputAmount') Количество товара для поставки
+                .col-xs-6
+                    input#inputAmount.form-control(type='text', ng-model='$ctrl.current.amount')
+            .form-group
+                label.col-xs-6.control-label(for='inputX') Координата x
+                .col-xs-6
+                    input#inputX.form-control(type='text', ng-model='$ctrl.current.x')
+            .form-group
+                label.col-xs-6.control-label(for='inputY') Координата y
+                .col-xs-6
+                    input#inputY.form-control(type='text', ng-model='$ctrl.current.y')
+            .form-group
+                .col-xs-6
+                    .alert.alert-success(role='alert', ng-class='{show: $ctrl.messages[0]}') Торговая точка добавлена!
+                    .alert.alert-danger(role='alert', ng-class='{show: $ctrl.messages[1]}') Заполните поля!
+                    .alert.alert-success(role='alert', ng-class='{show: $ctrl.messages[2]}') Торговая точка изменена!
+                    .alert.alert-danger(role='alert', ng-class='{show: $ctrl.messages[3]}') Заполните поля!
+                    .alert.alert-danger(role='alert', ng-class='{show: $ctrl.messages[4]}') Выберите точку!
+                    .alert.alert-success(role='alert', ng-class='{show: $ctrl.messages[5]}') Торговая точка удалена!
+                    .alert.alert-danger(role='alert', ng-class='{show: $ctrl.messages[6]}') Выберите точку!
+                .col-xs-6
+                    input.btn.btn-default.btn-crud(type='button', value='Добавить', ng-click='$ctrl.add()')
+                    input.btn.btn-default.btn-crud(type='button', value='Изменить', ng-click='$ctrl.edit()')
+                    input.btn.btn-default.btn-crud(type='button', value='Удалить', ng-click='$ctrl.delete()')
+            .form-group
+                .col-xs-offset-6.col-xs-6
+                    input.btn.btn-default.btn-crud(type='button', value='Сброс', ng-click='$ctrl.clear()')

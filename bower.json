@@ -1,0 +1,16 @@
+{
+  "name": "angular-auth",
+  "description": "An application for AngularJS and Express",
+  "version": "0.0.1",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular": "1.5.x",
+    "angular-animate": "1.5.x",
+    "angular-mocks": "1.5.x",
+    "bootstrap": "3.3.x",
+    "jquery": "2.2.x",
+    "angular-ui-router": "0.3.2",
+    "Snap.svg": "snap.svg#^0.4.1"
+  }
+}
