@@ -8,9 +8,10 @@ app
       function LoginController($state, $timeout, AuthService) {
        
         this.wrongCredentials = false;
-        var self = this;  
+        var self = this;
+
         this.login = function () {
-        AuthService.login(this.username, this.password)
+            AuthService.login(this.username, this.password)
             .then(function() {
                 $state.go('map');
             }, function (error) {
@@ -20,11 +21,6 @@ app
                 }, 5000);
                 console.log(error);
             });
-        };
-
-        this.cancel = function () {
-            this.username = '';
-            this.password = '';
         };
         
       }

@@ -4,12 +4,7 @@
 }
 
 .alert {
-    position: absolute;
-    visibility: hidden;
-}
-
-.show {
-    visibility: visible;
+    text-align: center;
 }
 
 .form-control {
@@ -17,8 +12,7 @@
 }
 
 .btn-crud {
-    margin-right: 30px;
-    margin-top: 5px;
+    margin-right: 9px;
 }
 
 #SVG {

@@ -22,12 +22,26 @@ app
           this.getCoordH = {};
           this.updateCurrent = {};
           this.registerDragEventsHandler = {};
-          this.messages = [];
-          this.showMessage = function(i) {
-              self.messages = [false, false, false, false, false, false, false];
-              self.messages[i] = true;
+          this.messages = {
+              add_done: false,
+              add_needCompletion: false,
+              edit_done: false,
+              edit_needCompletion: false,
+              edit_needSelection: false,
+              delete_done: false,
+              delete_needSelection: false
+          };
+          
+          this.showMessage = function(action) {
+              for(property in self.messages) {
+                  if (self.messages[property]) {
+                       self.messages[property] = false;
+                       break;
+                  }   
+              }
+              self.messages[action] = true;
               $timeout(function() {
-                  self.messages[i] = false;
+                  self.messages[action] = false;
               }, 5000);
           }
           
@@ -117,10 +131,10 @@ app
             var index = self.dots.length - 1;
             self.currentIndex = index;
             self.registerDragEventsHandler(self.dots[index], index);
-            self.showMessage(0);
+            self.showMessage('add_done');
           }
           else {
-              self.showMessage(1);
+              self.showMessage('add_needCompletion');
           }
         }      
               
@@ -135,14 +149,14 @@ app
                 self.dots[self.currentIndex].y = self.current.y;
                 AuthService.saveMapChanges(self.userInfo);
                 self.dots[self.currentIndex].dot.attr( { cx: self.dots[self.currentIndex].dot.attr('cx') - dx, cy: self.dots[self.currentIndex].dot.attr('cy') - dy } );
-                self.showMessage(2);
+                self.showMessage('edit_done');
             }
             else {
-                self.showMessage(3);
+                self.showMessage('edit_needCompletion');
             }
           }
           else {
-            self.showMessage(4);    
+            self.showMessage('edit_needSelection');    
           }
         }
         
@@ -153,10 +167,10 @@ app
               delete self.dots[this.currentIndex];
               AuthService.saveMapChanges(self.userInfo);
               this.currentIndex = null;
-              self.showMessage(5);
+              self.showMessage('delete_done');
           }
           else {
-              self.showMessage(6);
+              self.showMessage('delete_needSelection');
           }
         }    
         
@@ -169,7 +183,6 @@ app
             }, function (error) {
                 console.log(error);
             });
-
         }
         
         this.logout = function() {
@@ -184,4 +197,5 @@ app
         };
           
       }
+
   ]});
