@@ -51,3 +51,9 @@ bower_components
 
 # Visual Studio Code
 .vscode
+
+# HTML templates
+*.html
+
+# Bundles directory
+app/bundles
