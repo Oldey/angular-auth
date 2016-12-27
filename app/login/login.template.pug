@@ -1,10 +1,11 @@
 .container
   .container-fluid.header
-    .alert.alert-danger(role="alert", ng-show="$ctrl.wrongCredentials") Неверное имя пользователя или пароль!
-  form.form-signin
+    .alert.alert-danger(role="alert", ng-show="$ctrl.messages['wrongCredentials']") Неверное имя пользователя или пароль!
+    .alert.alert-danger(role="alert", ng-show="$ctrl.messages['missedCredentials']") Вы должны ввести имя пользователя и пароль!
+  form.form-signin(name="loginForm", novalidate="")
     h3.form-signin-heading Вход
-    label.sr-only(for="inputUsername") Email address
-    input#inputUsername.form-control(type="text", placeholder="Username", required, autofocus, ng-model="$ctrl.username")
+    label.sr-only(for="inputUsername") Имя пользователя
+    input#inputUsername.form-control(type="text", placeholder="Username", required="", autofocus, ng-model="$ctrl.username")
     label.sr-only(for="inputPassword") Password
-    input#inputPassword.form-control(type="password", placeholder="Password", required, ng-model="$ctrl.password")
-    button.btn.btn-lg.btn-primary.btn-block(type="submit", ng-click="$ctrl.login()") Войти
+    input#inputPassword.form-control(type="password", placeholder="Password", required="", ng-model="$ctrl.password")
+    button.btn.btn-lg.btn-primary.btn-block(type="submit", ng-click="$ctrl.login(loginForm)") Войти

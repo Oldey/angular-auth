@@ -9,34 +9,30 @@
             object#svgMap(data="map/tutzing.svg", type="image/svg+xml")
             svg#SVG
     .container.col-xs-5
-        form.form-horizontal(novalidate="")
+        form.form-horizontal(name="currentForm", novalidate="")
             .form-group
                 label.col-xs-6.control-label(for="inputName") Наименование торговой точки
                 .col-xs-6
-                    input#inputName.form-control(type="text", ng-model="$ctrl.current.name")
+                    input#inputName.form-control(type="text", required="", ng-model="$ctrl.current.name")
             .form-group
                 label.col-xs-6.control-label(for="inputAmount") Количество товара для поставки
                 .col-xs-6
-                    input#inputAmount.form-control(type="text", ng-model="$ctrl.current.amount")
+                    input#inputAmount.form-control(type="number", required="", ng-model="$ctrl.current.amount")
             .form-group
                 label.col-xs-6.control-label(for="inputX") Координата x
                 .col-xs-6
-                    input#inputX.form-control(type="text", ng-model="$ctrl.current.x")
+                    input#inputX.form-control(type="number", required="", ng-model="$ctrl.current.x")
             .form-group
                 label.col-xs-6.control-label(for="inputY") Координата y
                 .col-xs-6
-                    input#inputY.form-control(type="text", ng-model="$ctrl.current.y")
+                    input#inputY.form-control(type="number", required="", ng-model="$ctrl.current.y")
             .form-group
                 .col-xs-offset-2.col-xs-4
-                    .alert.alert-success(role="alert", ng-show="$ctrl.messages['add_done']") Торговая точка добавлена!
-                    .alert.alert-danger(role="alert", ng-show="$ctrl.messages['add_needCompletion']") Заполните поля!
-                    .alert.alert-success(role="alert", ng-show="$ctrl.messages['edit_done']") Торговая точка изменена!
-                    .alert.alert-danger(role="alert", ng-show="$ctrl.messages['edit_needCompletion']") Заполните поля!
-                    .alert.alert-danger(role="alert", ng-show="$ctrl.messages['edit_needSelection']") Выберите точку!
-                    .alert.alert-success(role="alert", ng-show="$ctrl.messages['delete_done']") Торговая точка удалена!
-                    .alert.alert-danger(role="alert", ng-show="$ctrl.messages['delete_needSelection']") Выберите точку!
+                    .alert.alert-success(role="alert", ng-show="$ctrl.messages['added']") Торговая точка добавлена!
+                    .alert.alert-success(role="alert", ng-show="$ctrl.messages['edited']") Торговая точка изменена!
+                    .alert.alert-success(role="alert", ng-show="$ctrl.messages['deleted']") Торговая точка удалена!
                 .col-xs-6
-                    input.btn.btn-default.btn-crud(type="button", value="Добавить", ng-click="$ctrl.add()")
-                    input.btn.btn-default.btn-crud(type="button", value="Изменить", ng-click="$ctrl.edit()")
-                    input.btn.btn-default.btn-crud(type="button", value="Удалить", ng-click="$ctrl.delete()")
+                    input.btn.btn-default.btn-crud(type="submit", value="Добавить", ng-disabled="currentForm.$invalid||currentForm.$pristine", ng-click="$ctrl.add()")
+                    input.btn.btn-default.btn-crud(type="button", value="Изменить", ng-disabled="currentForm.$invalid||!$ctrl.currentIndex", ng-click="$ctrl.edit()")
+                    input.btn.btn-default.btn-crud(type="button", value="Удалить", ng-disabled="!($ctrl.currentIndex===0||$ctrl.currentIndex)", ng-click="$ctrl.delete()")
                     input.btn.btn-default.btn-crud(type="button", value="Сброс", ng-click="$ctrl.clear()")

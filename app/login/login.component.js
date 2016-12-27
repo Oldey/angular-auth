@@ -4,23 +4,28 @@
 app
   .component('login', {
     templateUrl: 'login/login.template.html',
-    controller: ['$state', '$timeout', 'AuthService',
-      function LoginController($state, $timeout, AuthService) {
-       
-        this.wrongCredentials = false;
+    controller: ['$state', 'AuthService', 'NotifyService',
+      function LoginController($state, AuthService, NotifyService) {
+        
         var self = this;
+        this.messages = {
+            wrongCredentials: false,
+            missedCredentials: false
+        };
 
-        this.login = function () {
-            AuthService.login(this.username, this.password)
-            .then(function() {
-                $state.go('map');
-            }, function (error) {
-                self.wrongCredentials = true;
-                $timeout(function() {
-                    self.wrongCredentials = false;
-                }, 5000);
-                console.log(error);
-            });
+        this.login = function(loginForm) {
+            if (loginForm.$valid) {
+                AuthService.login(this.username, this.password)
+                .then(function() {
+                    $state.go('map');
+                }, function (error) {
+                    NotifyService.showMessage(self.messages, 'wrongCredentials');
+                    console.log(error);
+                });
+            }
+            else {
+                NotifyService.showMessage(self.messages, 'missedCredentials');
+            }
         };
         
       }
