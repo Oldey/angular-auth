@@ -149,13 +149,12 @@ app
             }
             
             this.logout = function() {
-            AuthService.logout()
+                AuthService.logout()
                 .then(function (result) {
                     this.userInfo = null;
                     $state.go('login');
-                console.log(self.s);
                 }, function (error) {
-                    console.log('logout error', error);
+                    console.log(error);
                 });
             };
             
