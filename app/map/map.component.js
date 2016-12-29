@@ -1,10 +1,20 @@
-// Register `map` component, along with its associated controller and template
-angular.module('statesApp')
+/**
+ * @name map.component:map
+ * @description Component provides user interaction with the map and basic CRUD functionality.
+ * 
+ */
+angular.module('map')
     .component('map', {
         bindings: {
-            auth: '<'
+            auth: '<' // promise object contains data associated with an authorized user (because been resolved)
         },
         templateUrl: 'map/map.template.html',
+
+        /**
+         * @name map.controller:MapController
+         * @description Controller defines basic logic for map component and is responsible for correct model data presentation
+         * 
+         */
         controller: ['$scope', '$state', 'AuthService', 'DataService', 'NotifyService',
         function MapController($scope, $state, AuthService, DataService, NotifyService) {
             
@@ -15,14 +25,17 @@ angular.module('statesApp')
             this.dotRadius = 10;
             this.dotOffset = this.dotRadius / 10;
 
+            // "current" (in context of CRUD operations) dot object and its index
             this.current;
             this.currentIndex;
 
+            // methods for pixel-percent canvas coordinates conversion
             this.getPercentW = (coord) => coord / this.canvasWidth * 100;
             this.getCoordW = (percent) => percent * this.canvasWidth / 100;
             this.getPercentH = (coord) => coord / this.canvasHeight * 100;
             this.getCoordH = (percent) => percent * this.canvasHeight / 100;
 
+            // method used in context of any event that requires changing "current" dot object
             this.updateCurrent = (item) => {
                 return {
                     name: item.name,
@@ -32,9 +45,16 @@ angular.module('statesApp')
                 };
             }
 
-            // The idea to limit the drag range of each circle is from here http://bl.ocks.org/mbostock/1557377
-            // x is being limited to the range [radius, canvasWidth - radius]
-            // y is being limited to the range [radius, canvasHeight - radius]
+            /**
+             * @function registerDragEventsHandler
+             * @description Method attaches drag event handlers (for drag move, drag start and drag end) to a given dot.
+             *              The idea to limit the drag range of each circle is from here http://bl.ocks.org/mbostock/1557377
+             *              x is being limited to the range [radius, canvasWidth - radius]
+             *              y is being limited to the range [radius, canvasHeight - radius]
+             * @param {Object} item - provided userData.dots array element.
+             * @param {Number} i - index of item.
+             * 
+             */
             this.registerDragEventsHandler = (item, i) => {
                 item.dot.drag(
                     (dx, dy, posx, posy) => { // drag move
@@ -68,7 +88,8 @@ angular.module('statesApp')
                 edited: false,
                 deleted: false
             };
-            
+
+            // initial setting for svg canvas
             angular.element(document).ready(() => { // TODO logic with DOM manipulations wrap into a separate directive
 
                 this.canvas = Snap('#SVG');
@@ -79,6 +100,7 @@ angular.module('statesApp')
                 this.canvasWidth = +this.canvas.attr('width');
                 this.canvasHeight = +this.canvas.attr('height');  
                 
+                // initial dots drawing and registerDragEventsHandler call for each of them
                 this.userData.dots.forEach((item, i, dots) => {
                     if (item) {
                         item.dot = this.canvas.circle(this.getCoordW(item.x), this.getCoordH(item.y), this.dotRadius);
@@ -86,6 +108,7 @@ angular.module('statesApp')
                     }});
             });
 
+            // "Add button click" event handler
             this.add = () => { // TODO manage adding an existent dot
                 let dot = this.canvas.circle(this.getCoordW(this.current.x), this.getCoordH(this.current.y), this.dotRadius);
                 this.userData.dots.push({
@@ -101,7 +124,8 @@ angular.module('statesApp')
                 this.registerDragEventsHandler(this.userData.dots[index], index);
                 NotifyService.showMessage(this.messages, 'added');
             }      
-                
+
+            // "Edit button click" event handler    
             this.edit = () => {
                 this.userData.dots[this.currentIndex].name = this.current.name;
                 this.userData.dots[this.currentIndex].amount = this.current.amount;
@@ -117,6 +141,7 @@ angular.module('statesApp')
                 NotifyService.showMessage(this.messages, 'edited');
             }
             
+            // "Delete button click" event handler 
             this.delete = () => {
                 this.userData.dots[this.currentIndex].dot.remove();
                 this.current = null;
@@ -126,6 +151,7 @@ angular.module('statesApp')
                 NotifyService.showMessage(this.messages, 'deleted');
             }    
             
+            // "Clear button click" event handler, requires authentication
             this.clear = () => {
             AuthService.resetChanges()
                 .then((result) => {
@@ -136,6 +162,7 @@ angular.module('statesApp')
                 });
             }
             
+            // Logout event handler, requires authentication
             this.logout = () => {
                 AuthService.logout()
                 .then((result) => {

@@ -1,4 +1,10 @@
 angular.module('statesApp')
+
+    /**
+     * @name statesApp.factory:DataService
+     * @description Service that works with data associated with a specific user. Allows to get and set that data and store it in localStorage.
+     * 
+     */
     .factory('DataService', ['$window',
         function($window) {
 

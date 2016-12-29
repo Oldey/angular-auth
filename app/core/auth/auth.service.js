@@ -1,8 +1,24 @@
 angular.module('core.auth')
+
+    /**
+     * @name core.auth.factory:AuthService
+     * @description Service that contains methods for login, logout and reset user changes actions.
+     * 
+     */
     .factory('AuthService', ['$http', '$q', 'DataService',
         function($http, $q, DataService) {
-
-            var _apiCallResult = (url, data, headers, p) => {
+            
+            /**
+             * @function _apiCallResult
+             * @description Method for HTTP POST request to the server
+             * @param {String} url - request url.
+             * @param {Object} data - provided data (username and password for login).
+             * @param {Object} headers - provided request headers (access token for logout and resetChanges).
+             * @param {Boolean} n - indicates the need to nullify userInfo data (set false for logout only).
+             * @returns {Object} Resolved or rejected promise. Resolved promise provides userInfo data from the server.
+             * 
+             */
+            var _apiCallResult = (url, data, headers, n) => {
                 let deferred = $q.defer();
 
                 $http({
@@ -12,7 +28,7 @@ angular.module('core.auth')
                     headers: headers
                 }).then((result) => {
                     let userInfo = null;
-                    if (p) userInfo = {
+                    if (n) userInfo = {
                         accessToken: result.data.access_token,
                         username: result.data.username,
                         dots: result.data.dots

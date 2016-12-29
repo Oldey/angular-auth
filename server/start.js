@@ -13,8 +13,9 @@ app.use(bodyParser.json()); // parse application/json
 app.set('port', process.env.PORT || 8000);
 app.set('jwtTokenSecret', '123456ABCDEF');
 
-var tokens = []; // TODO make tokens being save in file
+var tokens = []; // TODO make tokens being saved on server
 
+// executed if an action requires authentication (logout, reset user changes)
 function requiresAuthentication(request, response, next) {
     console.log(request.headers);
     if (request.headers.access_token) {
@@ -49,6 +50,7 @@ function removeFromTokens(token) {
     response.sendfile('./app/map/map.template.html');
 });*/
 
+// login action handler provides very simplified validity check of given user credentials and access token generation
 app.post('/api/login', function(request, response) {
     var username = request.body.username;
     var password = request.body.password;
@@ -73,13 +75,12 @@ app.post('/api/login', function(request, response) {
 app.post('/api/logout', requiresAuthentication, function(request, response) {
     var token = request.headers.access_token;
     removeFromTokens(token);
-   
     response.status(200).send();
 });
 
 app.post('/api/reset', requiresAuthentication, function(request, response) {
     var token = request.headers.access_token;
-    response.status(200).send({ access_token: token, username: 'test', dots: model }); // username
+    response.status(200).send({ access_token: token, username: 'test', dots: model }); // TODO username
 });
 
 app.listen(8000, function () {

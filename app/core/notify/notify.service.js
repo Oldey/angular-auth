@@ -1,4 +1,10 @@
 angular.module('core.notify')
+
+    /**
+     * @name core.notify.factory:NotifyService
+     * @description Service that contains a method for showing alerts for a time.
+     * 
+     */
     .factory('NotifyService', ['$timeout',
         function($timeout) {
 
