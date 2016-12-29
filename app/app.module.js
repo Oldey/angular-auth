@@ -1,6 +1,9 @@
 'use strict';
 
 // Define the `statesApp` module
-var app = angular.module('statesApp', [
-  'ui.router'
+angular.module('statesApp', [
+    'ui.router',
+    'core',
+    'login',
+    'map'
 ]);

@@ -8,60 +8,67 @@ var gulp = require('gulp'),
     pump = require('pump'),
 
     sources = {
-      styles: [
-        './app/bower_components/bootstrap/dist/css/bootstrap.css',
-        './app/app.css'
-      ],
-      scripts: [
-        './app/bower_components/angular/angular.js',
-        './app/bower_components/angular-ui-router/release/angular-ui-router.js',
-        './app/bower_components/Snap.svg/dist/snap.svg.js',
-        './app/app.module.js',
-        './app/app.service.js',
-        './app/app.config.js',
-        './app/login/login.component.js',
-        './app/map/map.component.js'
-      ],
-      templates: [
-        './app/index.pug',
-        './app/login/login.template.pug',
-        './app/map/map.template.pug'
-      ]
+        styles: [
+            './app/bower_components/bootstrap/dist/css/bootstrap.css',
+            './app/app.css'
+        ],
+        scripts: [
+            './app/bower_components/angular/angular.js',
+            './app/bower_components/angular-ui-router/release/angular-ui-router.js',
+            './app/bower_components/Snap.svg/dist/snap.svg.js',
+            './app/app.module.js',
+            './app/app.service.js',
+            './app/app.config.js',
+            './app/core/core.module.js',
+            './app/core/auth/auth.module.js',
+            './app/core/auth/auth.service.js',
+            './app/core/notify/notify.module.js',
+            './app/core/notify/notify.service.js',
+            './app/login/login.module.js',
+            './app/login/login.component.js',
+            './app/map/map.module.js',
+            './app/map/map.component.js'
+        ],
+        templates: [
+            './app/index.pug',
+            './app/login/login.template.pug',
+            './app/map/map.template.pug'
+        ]
     };
  
 gulp.task('styles', function(cb) {
-  pump([
-    gulp.src(sources.styles),
-    concat('styles.css'),
-    postcss([ autoprefixer() ]),
-    //cssnano(),
-    (gulp.dest('./app/bundles'))
-  ], cb)
+    pump([
+        gulp.src(sources.styles),
+        concat('styles.css'),
+        postcss([ autoprefixer() ]),
+        //cssnano(),
+        (gulp.dest('./app/bundles'))
+    ], cb)
 });
 
 gulp.task('scripts', function(cb) {
-  pump([
-    gulp.src(sources.scripts),
-    concat('scripts.js'),
-    //uglifyJS(),
-    gulp.dest('./app/bundles')
-  ], cb)
+    pump([
+        gulp.src(sources.scripts),
+        concat('scripts.js'),
+        //uglifyJS(),
+        gulp.dest('./app/bundles')
+    ], cb)
 });
  
 gulp.task('templates', function(cb) {
-  pump([
-    gulp.src(sources.templates),
-    pug(),
-    gulp.dest(function(file){
-      return file.base;
-    })
-  ], cb)
+    pump([
+        gulp.src(sources.templates),
+        pug(),
+        gulp.dest(function(file){
+        return file.base;
+        })
+    ], cb)
 });
 
 gulp.task('watch', function() {
- gulp.watch(sources.styles, ['styles']);
- gulp.watch(sources.scripts, ['scripts']);
- gulp.watch(sources.templates, ['templates'])
+    gulp.watch(sources.styles, ['styles']);
+    gulp.watch(sources.scripts, ['scripts']);
+    gulp.watch(sources.templates, ['templates'])
 });
 
 gulp.task('default', ['styles', 'scripts', 'templates']);

@@ -1,20 +1,20 @@
-'use strict';
-
-app
+angular.module('statesApp')
     .config(['$stateProvider', '$urlRouterProvider',
         function($stateProvider, $urlRouterProvider) {
 
             $stateProvider
                 .state('login', {
                     url: '/login',
-                    template: '<login></login>'
+                    template: '<login></login>',
+                    mode: 'public'
                 })
                 .state('map', {
                     url: '/map',
                     template: '<map auth="$resolve.auth"></map>',
+                    mode: 'private',
                     resolve: {
-                        auth: ['$q', 'AuthService', function($q, AuthService) {
-                            var userInfo = AuthService.getUserInfo();
+                        auth: ['$q', 'DataService', function($q, DataService) {
+                            let userInfo = DataService.getUserInfo();
                             if (userInfo) {
                                 return $q.when(userInfo);
                             }
@@ -34,15 +34,18 @@ app
         }
     ])
 
-    .run(['$rootScope' ,'$state', 'AuthService',
-        function($rootScope, $state, AuthService) {  
+    .run(['$rootScope' ,'$state', 'DataService',
+        function($rootScope, $state, DataService) {  
 
+            // If logged in and transitioning to a public state
             $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-                if (AuthService.getUserInfo() && toState.name === 'login') {
+                if (DataService.getUserInfo() && toState.mode === 'public' && fromState.mode === 'private') {
                     event.preventDefault();
+                    //$state.reload();
                 }
             });
-                
+            
+            // If logged out and transitioning to a private state
             $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error) {
                 if (error.authenticated === false) {
                     $state.go('login');

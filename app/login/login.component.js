@@ -1,32 +1,29 @@
-'use strict';
-
 // Register `login` component, along with its associated controller and template
-app
+angular.module('login')
   .component('login', {
     templateUrl: 'login/login.template.html',
     controller: ['$state', 'AuthService', 'NotifyService',
-      function LoginController($state, AuthService, NotifyService) {
-        
-        var self = this;
+    function LoginController($state, AuthService, NotifyService) {
+
         this.messages = {
             wrongCredentials: false,
             missedCredentials: false
         };
 
-        this.login = function(loginForm) {
+        this.login = (loginForm) => {
             if (loginForm.$valid) {
                 AuthService.login(this.username, this.password)
-                .then(function() {
+                .then(() => {
                     $state.go('map');
-                }, function (error) {
-                    NotifyService.showMessage(self.messages, 'wrongCredentials');
+                }, (error) => {
+                    NotifyService.showMessage(this.messages, 'wrongCredentials');
                     console.log(error);
                 });
             }
             else {
-                NotifyService.showMessage(self.messages, 'missedCredentials');
+                NotifyService.showMessage(this.messages, 'missedCredentials');
             }
         };
         
-      }
-  ]});
+    }]
+});

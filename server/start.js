@@ -77,7 +77,7 @@ app.post('/api/logout', requiresAuthentication, function(request, response) {
     response.status(200).send();
 });
 
-app.post('/api/clear', requiresAuthentication, function(request, response) {
+app.post('/api/reset', requiresAuthentication, function(request, response) {
     var token = request.headers.access_token;
     response.status(200).send({ access_token: token, username: 'test', dots: model }); // username
 });
