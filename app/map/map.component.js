@@ -58,7 +58,7 @@ angular.module('map')
             this.registerDragEventsHandler = (item, i) => {
                 item.dot.drag(
                     (dx, dy, posx, posy) => { // drag move
-                        let cx = posx + window.pageXOffset - document.querySelector('.wrapper').offsetLeft,
+                        let cx = posx + window.pageXOffset - document.querySelector('.svg-wrapper').offsetLeft,
                             cy = posy + window.pageYOffset - document.querySelector('.header').clientHeight;
                         item.dot.attr({
                             cx: Math.max(this.dotOffset, Math.min(this.canvasWidth - this.dotOffset, cx)), 
@@ -92,11 +92,10 @@ angular.module('map')
             // initial setting for svg canvas
             angular.element(document).ready(() => { // TODO logic with DOM manipulations wrap into a separate directive
 
+                document.querySelector('#SVG').setAttribute('width', 1000);
+                document.querySelector('#SVG').setAttribute('height', 1000);
+                
                 this.canvas = Snap('#SVG');
-                //document.getElementById('SVG').setAttribute('width', 1000);document.getElementById('SVG').setAttribute('height', 1000);
-                document.getElementById('SVG').setAttribute('width', document.getElementById('SVG').getBoundingClientRect().width);
-                document.getElementById('SVG').setAttribute('height', document.getElementById('SVG').getBoundingClientRect().height); 
-        
                 this.canvasWidth = +this.canvas.attr('width');
                 this.canvasHeight = +this.canvas.attr('height');  
                 
