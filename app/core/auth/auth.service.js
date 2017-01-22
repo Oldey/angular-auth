@@ -18,7 +18,7 @@ angular.module('core.auth')
              * @returns {Object} Resolved or rejected promise. Resolved promise provides userInfo data from the server.
              * 
              */
-            var _apiCallResult = (url, data, headers, n) => {
+            let _apiCallResult = (url, data, headers, n) => {
                 let deferred = $q.defer();
 
                 $http({
@@ -44,15 +44,15 @@ angular.module('core.auth')
 
             function login(username, password) {
                 return _apiCallResult('/api/login', { username: username, password: password }, {}, true);
-            };   
+            }
              
             function logout() {
                 return _apiCallResult('/api/logout', {}, { 'access_token': DataService.getUserInfo().accessToken }, false);
-            };
+            }
 
             function resetChanges() {
                 return _apiCallResult('/api/reset', {}, { 'access_token': DataService.getUserInfo().accessToken }, true);
-            };
+            }
                 
             return {
                 login,

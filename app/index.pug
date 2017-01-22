@@ -3,7 +3,9 @@ html(lang="en", ng-app="statesApp")
   head
     meta(charset="utf-8")
     title Приложение для агентов по продажам
-    link(rel="stylesheet", href="bundles/styles.css")  
+    link(rel="stylesheet", href="bundles/vendor.css?rev=@@hash")
+    link(rel="stylesheet", href="bundles/styles.css?rev=@@hash")
   body
     ui-view
-    script(src="bundles/scripts.js")
+    script(src="bundles/vendor.js?rev=@@hash")
+    script(src="bundles/scripts.js?rev=@@hash")

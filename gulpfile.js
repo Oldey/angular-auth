@@ -1,21 +1,29 @@
-var gulp = require('gulp'),
+const
+    gulp = require('gulp'),
     concat = require('gulp-concat'),
     uglifyJS = require('gulp-uglify'),
     postcss = require('gulp-postcss'),
     autoprefixer = require('autoprefixer'),
     cssnano = require('gulp-cssnano'),
     pug = require('gulp-pug'),
+    babel = require('gulp-babel'),
+    stylus = require('gulp-stylus'),
+    revAppend = require('gulp-rev-append'),
     pump = require('pump'),
 
     sources = {
-        styles: [
-            './app/bower_components/bootstrap/dist/css/bootstrap.css',
-            './app/app.css'
+        css: [
+            './app/bower_components/bootstrap/dist/css/bootstrap.css'
         ],
-        scripts: [
+        styles: [
+            './app/app.stylus'
+        ],
+        lib: [
             './app/bower_components/angular/angular.js',
             './app/bower_components/angular-ui-router/release/angular-ui-router.js',
-            './app/bower_components/Snap.svg/dist/snap.svg.js',
+            './app/bower_components/Snap.svg/dist/snap.svg.js'
+        ],
+        scripts: [
             './app/app.module.js',
             './app/app.service.js',
             './app/app.config.js',
@@ -36,9 +44,20 @@ var gulp = require('gulp'),
         ]
     };
  
+gulp.task('css', function(cb) {
+    pump([
+        gulp.src(sources.css),
+        concat('vendor.css'),
+        postcss([ autoprefixer() ]),
+        //cssnano(),
+        (gulp.dest('./app/bundles'))
+    ], cb)
+});
+
 gulp.task('styles', function(cb) {
     pump([
         gulp.src(sources.styles),
+        stylus(),
         concat('styles.css'),
         postcss([ autoprefixer() ]),
         //cssnano(),
@@ -46,9 +65,19 @@ gulp.task('styles', function(cb) {
     ], cb)
 });
 
+gulp.task('lib', function(cb) {
+    pump([
+        gulp.src(sources.lib),
+        concat('vendor.js'),
+        //uglifyJS(),
+        gulp.dest('./app/bundles')
+    ], cb)
+});
+
 gulp.task('scripts', function(cb) {
     pump([
         gulp.src(sources.scripts),
+        babel({ presets: ['es2015'] }),
         concat('scripts.js'),
         //uglifyJS(),
         gulp.dest('./app/bundles')
@@ -59,8 +88,9 @@ gulp.task('templates', function(cb) {
     pump([
         gulp.src(sources.templates),
         pug(),
+        revAppend(),
         gulp.dest(function(file){
-        return file.base;
+            return file.base;
         })
     ], cb)
 });
@@ -71,4 +101,4 @@ gulp.task('watch', function() {
     gulp.watch(sources.templates, ['templates'])
 });
 
-gulp.task('default', ['styles', 'scripts', 'templates']);
+gulp.task('default', ['css', 'styles', 'lib', 'scripts', 'templates']);

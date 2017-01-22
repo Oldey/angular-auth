@@ -10,7 +10,7 @@ angular.module('core.notify')
 
             function showMessage(messages, action) {
                 $timeout.cancel(messages.lastMessage);
-                for(property in messages) {
+                for(let property in messages) {
                     if (messages[property]) {
                         messages[property] = false;
                         break;
@@ -19,8 +19,8 @@ angular.module('core.notify')
                 messages[action] = true;
                 messages.lastMessage = $timeout(() => {
                     messages[action] = false;
-                }, 5000)
-            };
+                }, 5000);
+            }
 
             return {
                 showMessage

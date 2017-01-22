@@ -15,97 +15,105 @@ angular.module('map')
          * @description Controller defines basic logic for map component and is responsible for correct model data presentation
          * 
          */
-        controller: ['$scope', '$state', 'AuthService', 'DataService', 'NotifyService',
-        function MapController($scope, $state, AuthService, DataService, NotifyService) {
-            
-            this.userData = this.auth; // this.auth.dots is an array of dots with properties: amount, name, x, y
+        controller: ['$state', '$http', '$timeout', 'AuthService', 'DataService', 'NotifyService',
+        function MapController($state, $http, $timeout, AuthService, DataService, NotifyService) {
 
-            this.canvasWidth;
-            this.canvasHeight;
-            this.dotRadius = 10;
-            this.dotOffset = this.dotRadius / 10;
+            this.$onInit = () => {
+                this.userData = this.auth; // this.auth.dots is an array of dots with properties: amount, name, x, y
+                this.dotRadius = 10;
+                this.dotOffset = this.dotRadius / 10;
 
-            // "current" (in context of CRUD operations) dot object and its index
-            this.current;
-            this.currentIndex;
+                // "current" (in context of CRUD operations) dot object and its index
+                this.current = null;
+                this.currentIndex = null;
 
-            // methods for pixel-percent canvas coordinates conversion
-            this.getPercentW = (coord) => coord / this.canvasWidth * 100;
-            this.getCoordW = (percent) => percent * this.canvasWidth / 100;
-            this.getPercentH = (coord) => coord / this.canvasHeight * 100;
-            this.getCoordH = (percent) => percent * this.canvasHeight / 100;
+                // methods for pixel-percent canvas coordinates conversion
+                this.getPercentW = (coord) => coord / this.canvasSize.width * 100;
+                this.getCoordW = (percent) => percent * this.canvasSize.width / 100;
+                this.getPercentH = (coord) => coord / this.canvasSize.height * 100;
+                this.getCoordH = (percent) => percent * this.canvasSize.height / 100;
 
-            // method used in context of any event that requires changing "current" dot object
-            this.updateCurrent = (item) => {
-                return {
-                    name: item.name,
-                    amount: item.amount,
-                    x: item.x,
-                    y: item.y
+                // method used in context of any event that requires changing "current" dot object
+                this.updateCurrent = (item) => {
+                    return {
+                        name: item.name,
+                        amount: item.amount,
+                        x: item.x,
+                        y: item.y
+                    };
                 };
-            }
 
-            /**
-             * @function registerDragEventsHandler
-             * @description Method attaches drag event handlers (for drag move, drag start and drag end) to a given dot.
-             *              The idea to limit the drag range of each circle is from here http://bl.ocks.org/mbostock/1557377
-             *              x is being limited to the range [radius, canvasWidth - radius]
-             *              y is being limited to the range [radius, canvasHeight - radius]
-             * @param {Object} item - provided userData.dots array element.
-             * @param {Number} i - index of item.
-             * 
-             */
-            this.registerDragEventsHandler = (item, i) => {
-                item.dot.drag(
-                    (dx, dy, posx, posy) => { // drag move
-                        let cx = posx + window.pageXOffset - document.querySelector('.svg-wrapper').offsetLeft,
-                            cy = posy + window.pageYOffset - document.querySelector('.header').clientHeight;
-                        item.dot.attr({
-                            cx: Math.max(this.dotOffset, Math.min(this.canvasWidth - this.dotOffset, cx)), 
-                            cy: Math.max(this.dotOffset, Math.min(this.canvasHeight - this.dotOffset, cy))
-                        });
-                        item.x = this.getPercentW(item.dot.attr('cx'));
-                        item.y = this.getPercentH(item.dot.attr('cy'));
-                        $scope.$apply(() => {
-                            this.current = this.updateCurrent(item);
-                        });
-                    },
-                    () => { // drag start
-                        //console.log("Move started" + " cx = " + this.attr('cx') + " cy = " + this.attr('cy'));
-                        $scope.$apply(() => {
-                            this.current = this.updateCurrent(item);
-                        });
-                        this.currentIndex = i;
-                    },
-                    () => { // drag end
-                        DataService.setUserInfo(this.userData);
-                    }
-                );
+                /**
+                 * @function registerDragEventsHandler
+                 * @description Method attaches drag event handlers (for drag move, drag start and drag end) to a given dot.
+                 *              The idea to limit the drag range of each circle is from here http://bl.ocks.org/mbostock/1557377
+                 *              x is being limited to the range [radius, canvasWidth - radius]
+                 *              y is being limited to the range [radius, canvasHeight - radius]
+                 * @param {Object} item - provided userData.dots array element.
+                 * @param {Number} i - index of item.
+                 *
+                 */
+                this.registerDragEventsHandler = (item, i) => {
+                    item.dot.drag(
+                        (dx, dy, posx, posy) => { // drag move
+                            let cx = posx + window.pageXOffset - document.querySelector('.svg-wrapper').offsetLeft,
+                                cy = posy + window.pageYOffset - document.querySelector('.header').clientHeight;
+                            item.dot.attr({
+                                cx: Math.max(this.dotOffset, Math.min(this.canvasSize.width - this.dotOffset, cx)),
+                                cy: Math.max(this.dotOffset, Math.min(this.canvasSize.height - this.dotOffset, cy))
+                            });
+                            item.x = this.getPercentW(item.dot.attr('cx'));
+                            item.y = this.getPercentH(item.dot.attr('cy'));
+                            $timeout(() => {
+                                this.current = this.updateCurrent(item);
+                            });
+                        },
+                        () => { // drag start
+                            //console.log("Move started" + " cx = " + this.attr('cx') + " cy = " + this.attr('cy'));
+                            $timeout(() => {
+                                this.current = this.updateCurrent(item);
+                            });
+                            this.currentIndex = i;
+                        },
+                        () => { // drag end
+                            DataService.setUserInfo(this.userData);
+                        }
+                    );
+                };
+
+                this.messages = {
+                    added: false,
+                    edited: false,
+                    deleted: false
+                };
+
+                // initial setting for svg canvas
+                let svgUrl = 'map/tutzing.svg';
+                $http.get(svgUrl)
+                    .success((result) => {
+                        let svg = angular.element(result);
+                        let elem = document.querySelector('#map');
+                        elem.replaceWith(svg[2]);
+                        this.canvasSize = {
+                            width: svg[2].width.baseVal.value,
+                            height: svg[2].height.baseVal.value
+                        };
+
+                        document.querySelector('#canvas').setAttribute('width', this.canvasSize.width);
+                        document.querySelector('#canvas').setAttribute('height', this.canvasSize.height);
+                        this.canvas = Snap('#canvas');
+
+                        // initial dots drawing and registerDragEventsHandler call for each of them
+                        this.userData.dots.forEach((item, i) => {
+                            if (item) {
+                                item.dot = this.canvas.circle(this.getCoordW(item.x), this.getCoordH(item.y), this.dotRadius);
+                                this.registerDragEventsHandler(item, i);
+                            }});
+                    })
+                    .error((error) => {
+                        console.log(error);
+                    });
             };
-
-            this.messages = {
-                added: false,
-                edited: false,
-                deleted: false
-            };
-
-            // initial setting for svg canvas
-            angular.element(document).ready(() => { // TODO logic with DOM manipulations wrap into a separate directive
-
-                document.querySelector('#SVG').setAttribute('width', 1000);
-                document.querySelector('#SVG').setAttribute('height', 1000);
-                
-                this.canvas = Snap('#SVG');
-                this.canvasWidth = +this.canvas.attr('width');
-                this.canvasHeight = +this.canvas.attr('height');  
-                
-                // initial dots drawing and registerDragEventsHandler call for each of them
-                this.userData.dots.forEach((item, i, dots) => {
-                    if (item) {
-                        item.dot = this.canvas.circle(this.getCoordW(item.x), this.getCoordH(item.y), this.dotRadius);
-                        this.registerDragEventsHandler(item, i);
-                    }});
-            });
 
             // "Add button click" event handler
             this.add = () => { // TODO manage adding an existent dot
@@ -122,7 +130,7 @@ angular.module('map')
                 this.currentIndex = index;
                 this.registerDragEventsHandler(this.userData.dots[index], index);
                 NotifyService.showMessage(this.messages, 'added');
-            }      
+            };
 
             // "Edit button click" event handler    
             this.edit = () => {
@@ -138,7 +146,7 @@ angular.module('map')
                     cy: this.userData.dots[this.currentIndex].dot.attr('cy') - dy
                 });
                 NotifyService.showMessage(this.messages, 'edited');
-            }
+            };
             
             // "Delete button click" event handler 
             this.delete = () => {
@@ -148,7 +156,7 @@ angular.module('map')
                 DataService.setUserInfo(this.userData);
                 this.currentIndex = null;
                 NotifyService.showMessage(this.messages, 'deleted');
-            }    
+            };
             
             // "Clear button click" event handler, requires authentication
             this.clear = () => {
@@ -159,7 +167,7 @@ angular.module('map')
                 }, (error) => {
                     console.log(error);
                 });
-            }
+            };
             
             // Logout event handler, requires authentication
             this.logout = () => {
